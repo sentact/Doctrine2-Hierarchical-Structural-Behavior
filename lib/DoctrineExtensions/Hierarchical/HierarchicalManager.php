@@ -6,6 +6,8 @@ use DoctrineExtensions\Hierarchical\AdjacencyList\AdjacencyListNodeInfo,
     DoctrineExtensions\Hierarchical\AdjacencyList\AdjacencyListDecorator,
     DoctrineExtensions\Hierarchical\MaterializedPath\MaterializedPathNodeInfo,
     DoctrineExtensions\Hierarchical\MaterializedPath\MaterializedPathDecorator,
+    DoctrineExtensions\Hierarchical\EnumeratedPath\EnumeratedPathNodeInfo,
+    DoctrineExtensions\Hierarchical\EnumeratedPath\EnumeratedPathNodeDecorator,
     DoctrineExtensions\Hierarchical\NestedSet\NestedSetNodeInfo,
     DoctrineExtensions\Hierarchical\NestedSet\NestedSetDecorator,
     Doctrine\ORM\EntityManager,
@@ -36,8 +38,10 @@ class HierarchicalManager
             return new AdjacencyListDecorator($entity, $this);
         } else if ($entity instanceof MaterializedPathNodeInfo) {
             return new MaterializedPathDecorator($entity, $this);
-        } else */
-        if ($entity instanceof NestedSetNodeInfo) {
+        } */
+        if ($entity instanceof EnumeratedPathNodeInfo) {
+            return new EnumeratedPathNodeDecorator($entity, $this);
+        } else if ($entity instanceof NestedSetNodeInfo) {
             return new NestedSetDecorator($entity, $this);
         }
 
