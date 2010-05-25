@@ -47,26 +47,5 @@ class AbstractDecorator
     {
         $this->_class->reflFields[$fieldName]->setValue($this->_entity, $value);
     }
-
-    public function _processAddSiblingPos($pos = null)
-    {
-        if (null === $pos) {
-            if ($this->getNodeOrderBy()) {
-                $pos = 'sorted-sibling';
-            } else {
-                $pos = 'last-sibling';
-            }
-        }
-        if (! in_array($pos, array('first-sibling', 'left', 'right', 'last-sibling', 'sorted-sibling'))) {
-            throw new \InvalidArgumentException("Invalid relative position: {$pos}");
-        }
-        if ($this->getNodeOrderBy() && $pos != 'sorted-sibling') {
-            throw new \InvalidArgumentException("Must use 'sorted-sibling' in addSibling when nodeOrderBy is enabled");
-        }
-        if ($pos == 'sorted-sibling' && !$this->getNodeOrderBy()) {
-            throw new \InvalidArgumentException("getNodeOrderBy specifies no fields");
-        }
-        return $pos;
-    }
     // ...
 }

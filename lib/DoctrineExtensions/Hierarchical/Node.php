@@ -43,7 +43,7 @@ interface Node
     //public function getAncestors($depth = null, $limit = null, $offset = 0, $order = 'ASC');
     //public function getParent($update=false);
 
-    //public function move($target, $pos=null);
+    public function move($target, $pos=null);
     //public function moveAsFirstChildOf($entity);
     //public function moveAsLastChildOf($entity);
     //public function moveAsNextSiblingOf($entity);
@@ -51,7 +51,7 @@ interface Node
 
     //public function delete();
 
-    function _processAddSiblingPos($pos);
+    //function _processAddSiblingPos($pos);
     //function _processMovePos($pos);
 
     public function hasChildren();

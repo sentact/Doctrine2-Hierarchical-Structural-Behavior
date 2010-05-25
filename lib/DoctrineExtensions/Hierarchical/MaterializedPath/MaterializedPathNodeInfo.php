@@ -1,8 +1,8 @@
 <?php
 
-namespace DoctrineExtensions\Hierarchical\EnumeratedPath;
+namespace DoctrineExtensions\Hierarchical\MaterializedPath;
 
-interface EnumeratedPathNodeInfo
+interface MaterializedPathNodeInfo
 {
     /**
      * Retrieves the Entity identifier field name
