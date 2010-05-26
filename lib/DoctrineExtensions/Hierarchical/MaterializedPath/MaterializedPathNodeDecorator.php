@@ -695,7 +695,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node
             || ($pos == 'right' && $target == $target->getLastSibling())
         ) {
             // last node
-            $last = $target->getLastSibling();
+            $last = $this->_getNode($target->getLastSibling());
             $newPath = $this->_incPath($last->getPath());
             if ($moveBranch) {
                 $queries[] = $this->_qbFactory->getNewPathInBranchesQueryBuilder($this, $oldPath, $newPath);
