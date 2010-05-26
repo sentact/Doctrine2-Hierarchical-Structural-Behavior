@@ -71,13 +71,13 @@ class HierarchicalManager
         );
     }
 
-    public function createRoot($entity)
+    public function addRoot($entity)
     {
         if ( ! $entity instanceof Node) {
             $entity = $this->getNode($entity);
         }
 
-        $entity->createRoot();
+        $entity->addRoot();
 
         return $entity;
     }

@@ -13,7 +13,7 @@ interface Node
     public function getNumberOfChildren();
     
     public function getDescendants();
-    //public function getNumberOfDescendants();
+    public function getNumberOfDescendants();
 
     //public function getFirstChild();
     //public function getLastChild();
@@ -34,14 +34,14 @@ interface Node
     //public function insertAsNextSiblingOf($entity);
     //public function insertAsPrevSiblingOf($entity);
 
-    //public function createRoot();
-    //public function getRootNodes($limit = null, $offset = 0, $order = 'ASC');
-    //public function getRoot();
-    //public function isRoot();
+    public function addRoot();
+    public function getRootNodes();
+    public function getRoot();
+    public function isRoot();
     public function isLeaf();
 
-    //public function getAncestors($depth = null, $limit = null, $offset = 0, $order = 'ASC');
-    //public function getParent($update=false);
+    public function getAncestors();
+    public function getParent($update=false);
 
     public function move($target, $pos=null);
     //public function moveAsFirstChildOf($entity);
@@ -50,9 +50,6 @@ interface Node
     //public function moveAsPrevSiblingOf($entity);
 
     //public function delete();
-
-    //function _processAddSiblingPos($pos);
-    //function _processMovePos($pos);
 
     public function hasChildren();
     public function hasParent();
