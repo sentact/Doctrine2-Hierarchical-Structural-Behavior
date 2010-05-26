@@ -46,6 +46,7 @@ class PathHelper
      */
     public static function incPath($node, $path)
     {
+        $first = substr($path, 0, -$node->getStepLength());
         $last = substr($path, -$node->getStepLength());
         $newPos = self::str2int($last, strlen($node->getAlphabet())) + 1;
         $key = self::int2str($newPos, strlen($node->getAlphabet()));
@@ -53,7 +54,7 @@ class PathHelper
             throw new \Exception("Path overflow from: '{$path}'");
         }
         $pad = str_repeat('0', $node->getStepLength() - strlen($key));
-        return "{$last}{$pad}{$key}";
+        return "{$first}{$pad}{$key}";
     }
 
     /**
@@ -106,6 +107,6 @@ class PathHelper
     
     public static function int2str($int, $base = 36)
     {
-        return base_convert($int, 10, $base);
+        return strtoupper(base_convert($int, 10, $base));
     }
 }

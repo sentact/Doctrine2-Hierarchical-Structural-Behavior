@@ -129,7 +129,7 @@ class MaterializedPathQueryFactory
         $andX = $expr->andX();
         // TODO sets a value on parent
         if ($parent->isLeaf()) {
-            $andX->add($expr->eq('e.' . $node->getIdFieldName(), $parent->_getValue($node->getIdFieldName())));
+            $andX->add($expr->eq('e.' . $node->getIdFieldName(), $parent->getId()));
         } else {
             $andX->add($expr->like('e.' . $node->getPathFieldName(), $expr->literal($parent->getPath() . '%')));
             $andX->add($expr->gte('e.' . $node->getDepthFieldName(), $parent->getDepth()));

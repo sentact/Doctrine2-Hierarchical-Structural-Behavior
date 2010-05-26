@@ -124,9 +124,15 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node
         return $this->_getValue($this->getPathFieldName());
     }
 
+    public function getId()
+    {
+        return $this->_getValue($this->getIdFieldName());
+    }
+
     public function setParent($entity)
     {
         $this->_parent = $this->_getNode($entity);
+        $this->_setValue($this->getParentIdFieldName(), $entity->getId());
     }
 
     /**
@@ -156,7 +162,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node
             
             $this->_setValue($this->getDepthFieldName(), 1);
             $this->_setValue($this->getParentIdFieldName(), null);
-            $this->_setValue($this->getPathFieldName(), $this->_getPath(null, 1, 1));
+            $this->_setValue($this->getPathFieldName(), $newPath);
             $em->persist($this->_entity);
             $em->flush();
             $em->getConnection()->commit();
@@ -209,7 +215,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node
             ->orderBy('e.' . $this->getPathFieldName(), 'DESC')
             ->setMaxResults(1);
         try {
-            return $qb->getQuery()->getSingleResult();
+            return $this->_getNode($qb->getQuery()->getSingleResult());
         } catch (NoResultException $e) {
             return null;
         }
@@ -443,7 +449,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node
             $newPos = null;
             $siblingQb = array();
         }
-
+        $node->setParent($this->getParent());
         $queries = array();
         list($_, $newPath) = $this->_moveAddSibling($pos, $newPos, $this->getDepth(), $this, $siblingQb, $queries, null, false);
         
