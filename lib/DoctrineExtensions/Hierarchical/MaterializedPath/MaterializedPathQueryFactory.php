@@ -96,6 +96,24 @@ class MaterializedPathQueryFactory
     }
 
     /**
+     * Returns a QueryBuilder to grab the children of this node
+     *
+     * @return void
+     **/
+    public function getChildrenQueryBuilder($node)
+    {
+        $qb = $this->getBaseQueryBuilder($node);
+        $expr = $qb->expr();
+        $andX = $expr->andX();
+
+        $andX->add($expr->eq('e.' . $node->getDepthFieldName(), $node->getDepth() + 1));
+        $interval = PathHelper::getChildrenPathInterval($node, $node->getPath());
+        $andX->add($expr->between('e.' . $node->getPathFieldName(), $expr->literal($interval[0]), $expr->literal($interval[1])));
+        $qb->where($andX);
+        return $qb;
+    }
+
+    /**
      * Returns the query builder needed to update the numChildren value of a node
      *
      * @param Node $node

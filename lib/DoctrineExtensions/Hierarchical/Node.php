@@ -15,11 +15,11 @@ interface Node
     public function getDescendants();
     public function getNumberOfDescendants();
 
-    //public function getFirstChild();
-    //public function getLastChild();
+    public function getFirstChild();
+    public function getLastChild();
 
-    //public function getFirstSibling();
-    //public function getLastSibling();
+    public function getFirstSibling();
+    public function getLastSibling();
     public function getPrevSibling();
     public function getNextSibling();
 
