@@ -10,9 +10,7 @@ use DoctrineExtensions\Hierarchical\AbstractDecorator,
 
 class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, MaterializedPathNodeInfo
 {
-    protected $_parent;
-
-    protected $_children;
+    protected $parent;
 
     // Delegate support for Decorator object
 
@@ -23,7 +21,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
      */
     public function getIdFieldName()
     {
-        return $this->_entity->getIdFieldName();
+        return $this->entity->getIdFieldName();
     }
 
     /**
@@ -33,7 +31,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
      */
     public function getPathFieldName()
     {
-        return $this->_entity->getPathFieldName();
+        return $this->entity->getPathFieldName();
     }
 
     /**
@@ -43,7 +41,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
      */
     public function getParentIdFieldName()
     {
-        return $this->_entity->getParentIdFieldName();
+        return $this->entity->getParentIdFieldName();
     }
 
     /**
@@ -53,7 +51,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
      */
     public function getDepthFieldName()
     {
-        return $this->_entity->getDepthFieldName();
+        return $this->entity->getDepthFieldName();
     }
 
     /**
@@ -63,7 +61,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
      */
     public function getNumChildrenFieldName()
     {
-        return $this->_entity->getNumChildrenFieldName();
+        return $this->entity->getNumChildrenFieldName();
     }
 
     /**
@@ -73,7 +71,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
      */
     public function getNodeOrderBy()
     {
-        return $this->_entity->getNodeOrderBy();
+        return $this->entity->getNodeOrderBy();
     }
 
     /**
@@ -85,7 +83,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
      */
     public function getAlphabet()
     {
-        return $this->_entity->getAlphabet();
+        return $this->entity->getAlphabet();
     }
 
     /**
@@ -97,7 +95,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
      */
     public function getStepLength()
     {
-        return $this->_entity->getStepLength();
+        return $this->entity->getStepLength();
     }
 
     // End of delegate support of Decorator object
@@ -128,7 +126,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
 
     public function setParent($entity)
     {
-        $this->_parent = $this->_getNode($entity);
+        $this->parent = $this->_getNode($entity);
         $this->setValue($this->getParentIdFieldName(), $entity->getId());
     }
 
@@ -141,7 +139,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
      **/
     public function getRoot()
     {
-        $qb = $this->_hm->getQueryFactory()->getBaseQueryBuilder($this);
+        $qb = $this->hm->getQueryFactory()->getBaseQueryBuilder($this);
         $expr = $qb->expr();
         $rootPath = substr($this->getPath(), 0, $this->getStepLength());
         $qb->where($expr->eq('e.' . $this->getPathFieldName(), $expr->literal($rootPath)));
@@ -165,7 +163,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
      */
     public function getSiblings()
     {
-        $qb = $this->_hm->getQueryFactory()->getSiblingQueryBuilder($this);
+        $qb = $this->hm->getQueryFactory()->getSiblingQueryBuilder($this);
         $q = $qb->getQuery();
         return $q->getResult();
     }
@@ -176,7 +174,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
             return null;
         }
 
-        $qb = $this->_hm->getQueryFactory()->getChildrenQueryBuilder($this);
+        $qb = $this->hm->getQueryFactory()->getChildrenQueryBuilder($this);
         $q = $qb->getQuery();
         return $q->getResult();
     }
@@ -188,7 +186,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
      **/
     public function getFirstSibling()
     {
-        $qb = $this->_hm->getQueryFactory()
+        $qb = $this->hm->getQueryFactory()
             ->getSiblingQueryBuilder($this)
             ->setMaxResults(1);
         try {
@@ -205,7 +203,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
      **/
     public function getLastSibling()
     {
-        $qb = $this->_hm->getQueryFactory()
+        $qb = $this->hm->getQueryFactory()
             ->getSiblingQueryBuilder($this)
             ->orderBy('e.' . $this->getPathFieldName(), 'DESC')
             ->setMaxResults(1);
@@ -218,7 +216,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
 
     public function getNextSibling()
     {
-        $qb = $this->_hm->getQueryFactory()->getSiblingQueryBuilder($this);
+        $qb = $this->hm->getQueryFactory()->getSiblingQueryBuilder($this);
 
         $expr = $qb->expr();
         $qb->andWhere($expr->gt('e.' . $this->getPathFieldName(), $this->getPath()));
@@ -233,7 +231,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
 
     public function getDescendants()
     {
-        $qb = $this->_hm->getQueryFactory()->getTreeQueryBuilder($this, $this);
+        $qb = $this->hm->getQueryFactory()->getTreeQueryBuilder($this, $this);
 
         $expr = $qb->expr();
         $qb->andWhere($expr->not($expr->eq('e.' . $this->getIdFieldName(), $this->getValue($this->getIdFieldName()))));
@@ -248,7 +246,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
      **/
     public function getNumberOfDescendants()
     {
-        $qb = $this->_hm->getQueryFactory()->getTreeQueryBuilder($this, $this);
+        $qb = $this->hm->getQueryFactory()->getTreeQueryBuilder($this, $this);
 
         $expr = $qb->expr();
         $qb->select('COUNT(e)');
@@ -258,7 +256,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
 
     public function getPrevSibling()
     {
-        $qb = $this->_hm->getQueryFactory()->getSiblingQueryBuilder($this);
+        $qb = $this->hm->getQueryFactory()->getSiblingQueryBuilder($this);
 
         $expr = $qb->expr();
         $qb->andWhere($expr->lt('e.' . $this->getPathFieldName(), $this->getPath()));
@@ -314,7 +312,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
         if ($this->isLeaf()) {
             return null;
         }
-        $qb = $this->_hm->getQueryFactory()
+        $qb = $this->hm->getQueryFactory()
             ->getChildrenQueryBuilder($this)
             ->setMaxResults(1);
         return $this->_getNode($qb->getQuery()->getSingleResult());
@@ -330,7 +328,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
         if ($this->isLeaf()) {
             return null;
         }
-        $qb = $this->_hm->getQueryFactory()
+        $qb = $this->hm->getQueryFactory()
             ->getChildrenQueryBuilder($this)
             ->orderBy('e.' . $this->getPathFieldName(), 'DESC')
             ->setMaxResults(1);
@@ -339,7 +337,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
 
     public function addChild($entity)
     {
-        $em = $this->_hm->getEntityManager();
+        $em = $this->hm->getEntityManager();
         $em->getConnection()->beginTransaction();
         try {
             if (! $this->isLeaf() && $this->getNodeOrderBy()) {
@@ -350,22 +348,22 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
 
             $node = $this->_getNode($entity);
             $entity = $node->unwrap();
-            if ($entity === $this->_entity) {
+            if ($entity === $this->entity) {
                 throw new \IllegalArgumentException('Node cannot be added as child of itself.');
             }
 
-            $this->_class->reflFields[$this->getDepthFieldName()]->setValue($entity, $this->getDepth() + 1);
+            $this->classMetadata->reflFields[$this->getDepthFieldName()]->setValue($entity, $this->getDepth() + 1);
 
             if (!$this->isLeaf()) {
                 $newPath = $this->_incPath($this->_getNode($this->getLastChild())->getPath());
-                $this->_class->reflFields[$this->getPathFieldName()]->setValue($entity, $newPath);
+                $this->classMetadata->reflFields[$this->getPathFieldName()]->setValue($entity, $newPath);
             } else {
                 $newPath = $this->_getPath($this->getPath(), $node->getDepth(), 1);
-                $this->_class->reflFields[$this->getPathFieldName()]->setValue($entity, $newPath);
+                $this->classMetadata->reflFields[$this->getPathFieldName()]->setValue($entity, $newPath);
                 // TODO if strlen($newPath) > MAX_LEN throw exception
             }
 
-            $this->_hm->getEntityManager()->persist($entity);
+            $this->hm->getEntityManager()->persist($entity);
 
             $node->setParent($this);
             $this->setValue($this->getNumChildrenFieldName(), $this->getNumberOfChildren() + 1);
@@ -381,19 +379,19 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
 
     public function addSibling($pos = null, $entity)
     {
-        $em = $this->_hm->getEntityManager();
+        $em = $this->hm->getEntityManager();
         $em->getConnection()->beginTransaction();
         $pos = $this->_processAddSiblingPos($pos);
         $node = $this->_getNode($entity);
         $entity = $node->unwrap();
-        if ($entity === $this->_entity) {
+        if ($entity === $this->entity) {
             throw new \IllegalArgumentException('Node cannot be added as sibling of itself.');
         }
 
-        $this->_class->reflFields[$this->getDepthFieldName()]->setValue($entity, $this->getDepth());
+        $this->classMetadata->reflFields[$this->getDepthFieldName()]->setValue($entity, $this->getDepth());
 
         if ($pos == 'sorted-sibling') {
-            $siblingQb = $this->_hm->getQueryFactory()->getSortedPosQueryBuilder($this, $this->_hm->getQueryFactory()->getSiblingQueryBuilder($this), $node);
+            $siblingQb = $this->hm->getQueryFactory()->getSortedPosQueryBuilder($this, $this->hm->getQueryFactory()->getSiblingQueryBuilder($this), $node);
 
             try {
                 $q = $siblingQb->getQuery();
@@ -418,7 +416,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
 
         $parentPath = $this->_getBasePath($newPath, $this->getDepth() - 1);
         if ($parentPath) {
-            $queries[] = $this->_hm->getQueryFactory()->getUpdateNumChildrenQueryBuilder($this, $parentPath, 'inc');
+            $queries[] = $this->hm->getQueryFactory()->getUpdateNumChildrenQueryBuilder($this, $parentPath, 'inc');
         }
 
         try {
@@ -426,7 +424,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
                 $q = $qb->getQuery();
                 $q->execute();
             }
-            $this->_class->reflFields[$this->getPathFieldName()]->setValue($entity, $newPath);
+            $this->classMetadata->reflFields[$this->getPathFieldName()]->setValue($entity, $newPath);
             $em->persist($entity);
             $em->flush();
             $em->getConnection()->commit();
@@ -467,7 +465,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
             $paths[] = substr($this->getPath(), 0, $pos);
         }
 
-        $qb = $this->_hm->getQueryFactory()->getBaseQueryBuilder($this);
+        $qb = $this->hm->getQueryFactory()->getBaseQueryBuilder($this);
         $qb->where($qb->expr()->in('e.' . $this->getPathFieldName(), $paths));
         $qb->orderBy('e.' . $this->getDepthFieldName());
         return $qb->getQuery()->getResult();
@@ -486,14 +484,14 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
             return;
         }
         if ($update) {
-            unset($this->_parent);
-        } else if ($this->_parent) {
-            return $this->_parent;
+            unset($this->parent);
+        } else if ($this->parent) {
+            return $this->parent;
         }
 
         $parentPath = $this->_getBasePath($this->getPath(), $this->getDepth() - 1);
 
-        $qb = $this->_hm->getQueryFactory()->getBaseQueryBuilder($this);
+        $qb = $this->hm->getQueryFactory()->getBaseQueryBuilder($this);
         $qb->where($qb->expr()->eq('e.' . $this->getPathFieldName(), $parentPath));
         $parent = $this->_getNode($qb->getQuery()->getSingleResult());
         $this->setParent($parent);
@@ -533,7 +531,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
         }
 
         if ('sorted-sibling' == $pos) {
-            $siblings = $this->_getSortedPosQueryBuilder($this->_hm->getQueryFactory()->getSiblingQueryBuilder($target), $this);
+            $siblings = $this->_getSortedPosQueryBuilder($this->hm->getQueryFactory()->getSiblingQueryBuilder($target), $this);
             try {
                 $sibling = $siblings->getQuery();
                 $sibling->setMaxResults(1);
@@ -552,7 +550,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
 
         $this->_getUpdatesAfterMove($oldPath, $newPath, $queries);
 
-        $em = $this->_hm->getEntityManager();
+        $em = $this->hm->getEntityManager();
         $em->getConnection()->beginTransaction();
         try {
             foreach ($queries as $qb) {
@@ -659,13 +657,13 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
             $last = $this->_getNode($target->getLastSibling());
             $newPath = $this->_incPath($last->getPath());
             if ($moveBranch) {
-                $queries[] = $this->_hm->getQueryFactory()->getNewPathInBranchesQueryBuilder($this, $oldPath, $newPath);
+                $queries[] = $this->hm->getQueryFactory()->getNewPathInBranchesQueryBuilder($this, $oldPath, $newPath);
             }
         } else {
 
             if (null === $newPos) {
                 $baseNum = $this->_getLastPosInPath($target->getPath());
-                $siblings = $this->_hm->getQueryFactory()->getSiblingQueryBuilder($this);
+                $siblings = $this->hm->getQueryFactory()->getSiblingQueryBuilder($this);
                 $expr = $siblings->expr();
                 switch ($pos) {
                     case 'left':
@@ -696,7 +694,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
                 // Move the right siblings and their branches one step to the right
                 $node = $this->_getNode($node);
                 $nextPath = $this->_incPath($node->getPath());
-                $queries[] = $this->_hm->getQueryFactory()->getNewPathInBranchesQueryBuilder($this, $node->getPath(), $nextPath);
+                $queries[] = $this->hm->getQueryFactory()->getNewPathInBranchesQueryBuilder($this, $node->getPath(), $nextPath);
 
                 if ($moveBranch) {
                     if (0 === strpos($oldPath, $node->getPath())) {
@@ -706,7 +704,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
                     }
                     if (0 === strpos($target->getPath(), $node->getPath())) {
                         // If target moved, update the target entity
-                        $this->_class->reflFields[$this->getPathFieldName()]->setValue(
+                        $this->classMetadata->reflFields[$this->getPathFieldName()]->setValue(
                             $target, $nextPath . substr($target->getPath(), strlen($nextPath))
                         );
                     }
@@ -714,7 +712,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
             }
 
             if ($moveBranch) {
-                $queries[] = $this->_hm->getQueryFactory()->getNewPathInBranchesQueryBuilder($this, $oldPath, $newPath);
+                $queries[] = $this->hm->getQueryFactory()->getNewPathInBranchesQueryBuilder($this, $oldPath, $newPath);
             }
         }
         return array($oldPath, $newPath);
@@ -744,7 +742,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
                 $target = $target->getLastChild();
                 $pos = str_replace('child', 'sibling', $pos);
             }
-            $this->_class->reflValues[$this->getNumChildrenFieldName()]->setValue($parent, $parent->getNumberOfChildren() + 1);
+            $this->classMetadata->reflValues[$this->getNumChildrenFieldName()]->setValue($parent, $parent->getNumberOfChildren() + 1);
         }
         return array($pos, $target, $newDepth, $siblings, $newPos);
     }
@@ -768,11 +766,11 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
         ) {
             // Node canged parent, update count
             if ($oldParentPath) {
-                $queries[] = $this->_hm->getQueryFactory()->getUpdateNumChildrenQueryBuilder($this, $oldParentPath, 'dec');
+                $queries[] = $this->hm->getQueryFactory()->getUpdateNumChildrenQueryBuilder($this, $oldParentPath, 'dec');
             }
 
             if ($newParentPath) {
-                $queries[] = $this->_hm->getQueryFactory()->getUpdateNumChildrenQueryBuilder($this, $newParentPath, 'inc');
+                $queries[] = $this->hm->getQueryFactory()->getUpdateNumChildrenQueryBuilder($this, $newParentPath, 'inc');
             }
         }
     }

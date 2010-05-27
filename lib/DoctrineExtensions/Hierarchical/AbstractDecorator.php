@@ -5,47 +5,47 @@ namespace DoctrineExtensions\Hierarchical;
 
 class AbstractDecorator
 {
-    protected $_class;
+    protected $classMetadata;
 
-    protected $_entity;
+    protected $entity;
 
-    protected $_hm;
+    protected $hm;
 
     public function __construct($entity, $hm)
     {
-        $this->_class = $hm->getEntityManager()->getClassMetadata(get_class($entity));
-        $this->_entity = $entity;
-        $this->_hm = $hm;
+        $this->classMetadata = $hm->getEntityManager()->getClassMetadata(get_class($entity));
+        $this->entity = $entity;
+        $this->hm = $hm;
     }
 
     public function unwrap()
     {
-        return $this->_entity;
+        return $this->entity;
     }
 
     public function getClassMetadata()
     {
-        return $this->_class;
+        return $this->classMetadata;
     }
 
     public function getHierarchicalManager()
     {
-        return $this->_hm;
+        return $this->hm;
     }
 
     protected function _getNode($entity)
     {
-        return $this->_hm->getNode($entity);
+        return $this->hm->getNode($entity);
     }
 
     public function getValue($fieldName)
     {
-        return $this->_class->reflFields[$fieldName]->getValue($this->_entity);
+        return $this->classMetadata->reflFields[$fieldName]->getValue($this->entity);
     }
 
     public function setValue($fieldName, $value)
     {
-        $this->_class->reflFields[$fieldName]->setValue($this->_entity, $value);
+        $this->classMetadata->reflFields[$fieldName]->setValue($this->entity, $value);
     }
     // ...
 }
