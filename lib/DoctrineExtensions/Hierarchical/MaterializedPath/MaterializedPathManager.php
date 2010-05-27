@@ -230,6 +230,61 @@ class MaterializedPathManager extends AbstractManager implements MaterializedPat
     }
 
     /**
+     * Checks for problems in tree structre
+     *
+     * @return array
+     **/
+    public function findProblems()
+    {
+        $badChars = $badStepLength = $orphans = $wrongDepth = $wrongNumChildren = array();
+        $q = $this->qbFactory->getBaseQueryBuilder()->getQuery();
+        foreach ($q->getResult() as $node) {
+            $bad = false;
+            $node = $this->getNode($node);
+            foreach (str_split($node->getPath()) as $char) {
+                if (false === strpos($this->getAlphabet(), $char)) {
+                    $badChars[] = $node->getId();
+                    $bad = true;
+                    break;
+                }
+            }
+            if ($bad) {
+                continue;
+            }
+            if (strlen($node->getPath()) % $this->getStepLength()) {
+                $badStepLength[] = $node->getId();
+                continue;
+            }
+            try {
+                $node->getParent(true);
+            } catch (NoResultException $e) {
+                $orphans[] = $node->getId();
+                continue;
+            }
+            if ($node->getDepth() != strlen($node->getPath()) / $this->getStepLength()) {
+                $wrongDepth[] = $node->getId();
+                continue;
+            }
+
+            $qb = $this->qbFactory->getBaseQueryBuilder()->select('COUNT(e)');
+            $expr = $qb->expr();
+            $andX = $expr->andX();
+            $interval = PathHelper::getChildrenPathInterval($node, $node->getPath());
+            $andX->add($expr->between('e.' . $this->getPathFieldName(), $expr->literal($interval[0]), $expr->literal($interval[1])));
+            $len = $expr->length('e.' . $this->getPathFieldName());
+            $quot = $expr->quot($len, $this->getStepLength());
+            $andX->add($expr->eq($quot, $node->getDepth() + 1));
+            $numChildren = $qb->where($andX)->getQuery()->getSingleScalarResult();
+
+            if ($numChildren != $node->getNumberOfChildren()) {
+                $wrongNumChildren[] = $node->getId();
+                continue;
+            }
+        }
+        return array($badChars, $badStepLength, $orphans, $wrongDepth, $wrongNumChildren);
+    }
+
+    /**
      * BEGIN MaterializedPathNodeInfo Implementation
      **/
 

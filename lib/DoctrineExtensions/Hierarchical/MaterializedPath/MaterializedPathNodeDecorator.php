@@ -492,7 +492,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
         $parentPath = $this->_getBasePath($this->getPath(), $this->getDepth() - 1);
 
         $qb = $this->hm->getQueryFactory()->getBaseQueryBuilder($this);
-        $qb->where($qb->expr()->eq('e.' . $this->getPathFieldName(), $parentPath));
+        $qb->where($qb->expr()->eq('e.' . $this->getPathFieldName(), $qb->expr()->literal($parentPath)));
         $parent = $this->_getNode($qb->getQuery()->getSingleResult());
         $this->setParent($parent);
         return $parent;
