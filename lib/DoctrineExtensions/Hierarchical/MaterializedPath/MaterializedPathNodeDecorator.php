@@ -18,7 +18,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node
     public function __construct($entity, $hm)
     {
         parent::__construct($entity, $hm);
-        $this->_qbFactory = new MaterializedPathQueryFactory($entity, $hm);
+        //$this->_qbFactory = new MaterializedPathQueryFactory($entity, $hm);
     }
 
     // Delegate support for Decorator object
@@ -115,7 +115,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node
      */
     public function getDepth()
     {
-        return $this->_getValue($this->getDepthFieldName());
+        return $this->getValue($this->getDepthFieldName());
     }
 
     /**
@@ -125,104 +125,21 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node
      */
     public function getPath()
     {
-        return $this->_getValue($this->getPathFieldName());
+        return $this->getValue($this->getPathFieldName());
     }
 
     public function getId()
     {
-        return $this->_getValue($this->getIdFieldName());
+        return $this->getValue($this->getIdFieldName());
     }
 
     public function setParent($entity)
     {
         $this->_parent = $this->_getNode($entity);
-        $this->_setValue($this->getParentIdFieldName(), $entity->getId());
+        $this->setValue($this->getParentIdFieldName(), $entity->getId());
     }
 
-    /**
-     * Adds this node as a root of the tree
-     *
-     * @return Node
-     */
-    public function addRoot()
-    {
-        if ($this->getId()) {
-            throw new HierarchicalException('This entity is already initialized and can not be made a root node');
-        }
 
-        $em = $this->_hm->getEntityManager();
-        $em->getConnection()->beginTransaction();
-        try {
-            $lastRoot = $this->getLastRootNode();
-            if ($lastRoot && $this->getNodeOrderBy()) {
-                return $lastRoot->addSibling('sorted-sibling', $this);
-            }
-
-            if ($lastRoot) {
-                $newPath = $this->_incPath($lastRoot->getPath());
-            } else {
-                $newPath = $this->_getPath(null, 1, 1);
-            }
-
-            $this->_setValue($this->getDepthFieldName(), 1);
-            $this->_setValue($this->getPathFieldName(), $newPath);
-            $em->persist($this->_entity);
-            $em->flush();
-            $em->getConnection()->commit();
-        } catch (\Exception $e) {
-            $em->getConnection()->rollback();
-            $em->close();
-            throw $e;
-        }
-    }
-
-    /**
-     * Returns all root nodes of the tree
-     *
-     * @return Collection
-     **/
-    public function getRootNodes()
-    {
-        return $this->_qbFactory
-            ->getRootNodeQueryBuilder($this)
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
-     * Retrns the first root node in the tree
-     *
-     * @return Node|null
-     **/
-    public function getFirstRootNode()
-    {
-        $qb = $this->_qbFactory
-            ->getRootNodeQueryBuilder($this)
-            ->setMaxResults(1);
-        try {
-            return $qb->getQuery()->getSingleResult();
-        } catch (NoResultsException $e) {
-            return null;
-        }
-    }
-
-    /**
-     * Returns last root of the tree or null
-     *
-     * @return Node|null
-     **/
-    public function getLastRootNode()
-    {
-        $qb = $this->_qbFactory
-            ->getRootNodeQueryBuilder($this)
-            ->orderBy('e.' . $this->getPathFieldName(), 'DESC')
-            ->setMaxResults(1);
-        try {
-            return $this->_getNode($qb->getQuery()->getSingleResult());
-        } catch (NoResultException $e) {
-            return null;
-        }
-    }
 
     /**
      * Returns the root node of the current node
@@ -326,7 +243,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node
         $qb = $this->_qbFactory->getTreeQueryBuilder($this, $this);
 
         $expr = $qb->expr();
-        $qb->andWhere($expr->not($expr->eq('e.' . $this->getIdFieldName(), $this->_getValue($this->getIdFieldName()))));
+        $qb->andWhere($expr->not($expr->eq('e.' . $this->getIdFieldName(), $this->getValue($this->getIdFieldName()))));
         $q = $qb->getQuery();
         return $q->getResult();
     }
@@ -342,7 +259,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node
 
         $expr = $qb->expr();
         $qb->select('COUNT(e)');
-        $qb->andWhere($expr->not($expr->eq('e.' . $this->getIdFieldName(), $this->_getValue($this->getIdFieldName()))));
+        $qb->andWhere($expr->not($expr->eq('e.' . $this->getIdFieldName(), $this->getValue($this->getIdFieldName()))));
         return $qb->getQuery()->getSingleScalarResult();
     }
 
@@ -364,7 +281,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node
 
     public function getNumberOfChildren()
     {
-        return $this->_getValue($this->getNumChildrenFieldName());
+        return $this->getValue($this->getNumChildrenFieldName());
     }
 
     public function isSiblingOf($entity)
@@ -458,7 +375,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node
             $this->_hm->getEntityManager()->persist($entity);
 
             $node->setParent($this);
-            $this->_setValue($this->getNumChildrenFieldName(), $this->getNumberOfChildren() + 1);
+            $this->setValue($this->getNumChildrenFieldName(), $this->getNumberOfChildren() + 1);
             $em->flush();
             $em->getConnection()->commit();
         } catch (\Exception $e) {
@@ -534,7 +451,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node
 
     public function hasParent()
     {
-        return !is_null($this->_getValue($this->getParentIdFieldName()));
+        return !is_null($this->getValue($this->getParentIdFieldName()));
     }
 
     public function isLeaf()

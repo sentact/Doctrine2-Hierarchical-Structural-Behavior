@@ -11,7 +11,7 @@ interface Node
     public function getSiblings();
     public function getChildren();
     public function getNumberOfChildren();
-    
+
     public function getDescendants();
     public function getNumberOfDescendants();
 
@@ -34,8 +34,6 @@ interface Node
     //public function insertAsNextSiblingOf($entity);
     //public function insertAsPrevSiblingOf($entity);
 
-    public function addRoot();
-    public function getRootNodes();
     public function getRoot();
     public function isRoot();
     public function isLeaf();

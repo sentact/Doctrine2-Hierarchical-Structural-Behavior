@@ -5,22 +5,35 @@ namespace DoctrineExtensions\Hierarchical\MaterializedPath;
 use DoctrineExtensions\Hierarchical\AbstractDecorator,
     DoctrineExtensions\Hierarchical\Node,
     DoctrineExtensions\Hierarchical\HierarchicalException,
-    Doctrine\ORM\NoResultException;
+    DoctrineExtensions\Hierarchical\MaterializedPath\MaterializedPathManager,
+    Doctrine\ORM\NoResultException,
+    Doctrine\ORM\Mapping\ClassMetadata;
 
 
 class MaterializedPathQueryFactory
 {
-    protected $_class;
+    /**
+     * @var DoctrineExtensions\Hierarchical\MaterializedPath\MaterializedPathManager
+     */
+    protected $hm;
 
-    protected $_entity;
+    /**
+     * @var Doctrine\ORM\Mapping\ClassMetadata
+     */
+    protected $classMetadata;
 
-    protected $_hm;
+    /**
+     * ReadOnly prototype entity grabbed from ClassMetadata
+     *
+     * @var string
+     **/
+    protected $prototype;
 
-    public function __construct($entity, $hm)
+    public function __construct(MaterializedPathManager $hm, ClassMetadata $meta)
     {
-        $this->_class = $hm->getEntityManager()->getClassMetadata(get_class($entity));
-        $this->_entity = $entity;
-        $this->_hm = $hm;
+        $this->hm = $hm;
+        $this->classMetadata = $meta;
+        $this->prototype = $meta->newInstance();
     }
 
     /**
@@ -29,12 +42,13 @@ class MaterializedPathQueryFactory
      * @param  $node
      * @return void
      */
-    public function getBaseQueryBuilder($node)
+    public function getBaseQueryBuilder()
     {
-        return $this->_hm->getEntityManager()->createQueryBuilder()
+        return $this->hm->getEntityManager()
+            ->createQueryBuilder()
             ->select('e')
-            ->from($this->_class->name, 'e')
-            ->orderBy('e.' . $node->getPathFieldName());
+            ->from($this->classMetadata->name, 'e')
+            ->orderBy('e.' . $this->prototype->getPathFieldName());
     }
 
     /**
@@ -56,7 +70,7 @@ class MaterializedPathQueryFactory
         $fields = $ands = array();
 
         foreach ($entity->getNodeOrderBy() as $field) {
-            $value = $this->_class->reflFields[$field]->getValue($entity);
+            $value = $this->classMetadata->reflFields[$field]->getValue($entity);
 
             $andX = $qb->expr();
             foreach ($fields as $f => $v) {
@@ -125,9 +139,9 @@ class MaterializedPathQueryFactory
     {
         $dir = ($dir == 'inc') ? '+' : '-';
 
-        $qb = $this->_hm->getEntityManager()
+        $qb = $this->hm->getEntityManager()
             ->createQueryBuilder()
-            ->update($this->_class->name, 'e');
+            ->update($this->classMetadata->name, 'e');
 
         $rval = $node->getNumChildrenFieldName() . $dir . '1';
         $qb->set('e.' . $node->getNumChildrenFieldName(), 'e.' . $rval);
@@ -164,9 +178,9 @@ class MaterializedPathQueryFactory
      **/
     public function getUpdateDepthInBranchQueryBuilder($node, $path)
     {
-        $qb = $this->_hm->getEntityManager()
+        $qb = $this->hm->getEntityManager()
             ->createQueryBuilder()
-            ->update($this->_class->name, 'e');
+            ->update($this->classMetadata->name, 'e');
 
         $expr = $qb->expr();
 
@@ -190,9 +204,9 @@ class MaterializedPathQueryFactory
     public function getNewPathInBranchesQueryBuilder($node, $oldPath, $newPath)
     {
         // TODO abstract to getBaseUpdateQb
-        $qb = $this->_hm->getEntityManager()
+        $qb = $this->hm->getEntityManager()
             ->createQueryBuilder()
-            ->update($this->_class->name, 'e');
+            ->update($this->classMetadata->name, 'e');
 
         $expr = $qb->expr();
 
@@ -218,10 +232,10 @@ class MaterializedPathQueryFactory
      * @param Node $node
      * @return QueryBuilder
      **/
-    public function getRootNodeQueryBuilder($node)
+    public function getRootNodeQueryBuilder()
     {
-        $qb = $this->getBaseQueryBuilder($node);
-        $qb->where($qb->expr()->eq('e.' . $node->getDepthFieldName(), 1));
+        $qb = $this->getBaseQueryBuilder();
+        $qb->where($qb->expr()->eq('e.' . $this->prototype->getDepthFieldName(), 1));
         return $qb;
     }
 }

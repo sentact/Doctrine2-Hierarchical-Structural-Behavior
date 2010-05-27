@@ -20,6 +20,13 @@ abstract class AbstractManager
     protected $classMetadata;
 
     /**
+     * ReadOnly prototype entity grabbed from ClassMetadata
+     *
+     * @var string
+     **/
+    protected $prototype;
+
+    /**
      * __construct
      *
      * @param Doctrine\ORM\EntityManager $em
@@ -30,6 +37,7 @@ abstract class AbstractManager
     {
         $this->em = $em;
         $this->classMetadata = $meta;
+        $this->prototype = $meta->newInstance();
     }
 
     /**

@@ -2,6 +2,8 @@
 
 namespace DoctrineExtensions\Hierarchical\MaterializedPath;
 
+use DoctrineExtensions\Hierarchical\MaterializedPath\MaterializedPathNodeInfo as NodeInfo;
+
 class PathHelper
 {
     /**
@@ -12,7 +14,7 @@ class PathHelper
      * @param string $depth 
      * @return string
      */
-    public static function getBasePath($node, $path, $depth)
+    public static function getBasePath(NodeInfo $node, $path, $depth)
     {
         if (!$path) {
             return '';
@@ -29,7 +31,7 @@ class PathHelper
      * @param integer $newStep 
      * @return string
      */
-    public static function getPath($node, $path, $depth, $newStep)
+    public static function getPath(NodeInfo $node, $path, $depth, $newStep)
     {
         $parentPath = self::getBasePath($node, $path, $depth - 1);
         $key = strtoupper(self::int2str($newStep, strlen($node->getAlphabet())));
@@ -44,7 +46,7 @@ class PathHelper
      * @param string $path 
      * @return string
      */
-    public static function incPath($node, $path)
+    public static function incPath(NodeInfo $node, $path)
     {
         $first = substr($path, 0, -$node->getStepLength());
         $last = substr($path, -$node->getStepLength());
@@ -64,7 +66,7 @@ class PathHelper
      * @param string $path
      * @return integer
      **/
-    public static function getLastPosInPath($node, $path)
+    public static function getLastPosInPath(NodeInfo $node, $path)
     {
         $last = substr($path, -$node->getStepLength());
         return self::str2int($last, strlen($node->getAlphabet()));
@@ -77,7 +79,7 @@ class PathHelper
      * @param string $path 
      * @return string
      */
-    public static function getParentPathFromPath($node, $path)
+    public static function getParentPathFromPath(NodeInfo $node, $path)
     {
         if (!$path) {
             return '';
@@ -92,7 +94,7 @@ class PathHelper
      * @param string $path 
      * @return array Index 0: start - Index 1: end
      */
-    public static function getChildrenPathInterval($node, $path)
+    public static function getChildrenPathInterval(NodeInfo $node, $path)
     {
         return array(
             $path . str_repeat(substr($node->getAlphabet(), 0, 1), $node->getStepLength()),
