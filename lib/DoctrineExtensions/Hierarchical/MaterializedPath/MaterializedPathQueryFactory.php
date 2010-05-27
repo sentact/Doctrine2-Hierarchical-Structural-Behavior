@@ -87,9 +87,16 @@ class MaterializedPathQueryFactory
         return $qb;
     }
 
+    /**
+     * Returns a QueryBuilder to grab the siblings of the given node
+     *
+     * @param string $node
+     * @return void
+     * @author David Abdemoulaie
+     */
     public function getSiblingQueryBuilder($node)
     {
-        $qb = $this->getBaseQueryBuilder($node);
+        $qb = $this->getBaseQueryBuilder();
         $expr = $qb->expr();
         $andX = $expr->andX();
 
@@ -116,7 +123,7 @@ class MaterializedPathQueryFactory
      **/
     public function getChildrenQueryBuilder($node)
     {
-        $qb = $this->getBaseQueryBuilder($node);
+        $qb = $this->getBaseQueryBuilder();
         $expr = $qb->expr();
         $andX = $expr->andX();
 
@@ -152,7 +159,7 @@ class MaterializedPathQueryFactory
 
     public function getTreeQueryBuilder($node, $parent = null)
     {
-        $qb = $this->getBaseQueryBuilder($node);
+        $qb = $this->getBaseQueryBuilder();
         if (null == $parent) {
             return $qb;
         }

@@ -29,6 +29,16 @@ class MaterializedPathManager extends AbstractManager implements MaterializedPat
     }
 
     /**
+     * Returns the QueryBuilder factory
+     *
+     * @return MaterializedPathQueryFactory
+     **/
+    public function getQueryFactory()
+    {
+        return $this->qbFactory;
+    }
+
+    /**
      * Decorates the entity with the appropriate Node decorator
      *
      * @param mixed $entity
@@ -139,7 +149,77 @@ class MaterializedPathManager extends AbstractManager implements MaterializedPat
         }
     }
 
+    /**
+     * undocumented function
+     *
+     * @return void
+     **/
+    public function delete($entity)
+    {
+        $node = $this->getNode($entity);
+        $qb = $this->qbFactory
+            ->getBaseQueryBuilder()
+            ->orderBy('e.' . $this->getDepthFieldName())
+            ->addOrderBy('e.' . $this->getPathFieldName());
+        $expr = $qb->expr();
+        $qb->where($expr->eq('e.' . $this->getIdFieldName(), $node->getId()));
+        $removed = array();
+        $this->em->getConnection()->beginTransaction();
+        try {
+            foreach ($qb->getQuery()->getResult() as $node) {
+                $node = $this->getNode($node);
+                $found = false;
+                $range = array_slice(range(1, strlen($node->getPath()) / $this->getStepLength()), 0, -1);
+                foreach ($range as $depth) {
+                    $path = PathHelper::getBasePath($node, $node->getPath(), $depth);
+                    if (isset($removed[$path])) {
+                        // already removing a parent of this node
+                        $found = true;
+                        break;
+                    }
+                }
+                if (!$found) {
+                    $removed[$node->getPath()] = $node;
+                }
+            }
 
+            $parents = array();
+            $toRemove = array();
+            $qb = $this->em->createQueryBuilder();
+            $expr = $qb->expr();
+            foreach ($removed as $path => $node) {
+                $parentPath = PathHelper::getBasePath($node, $node->getPath(), $node->getDepth() - 1);
+                if ($parentPath) {
+                    if (!isset($parents[$parentPath])) {
+                        $parents[$parentPath] = $node->getParent(true);
+                    }
+                    $parent = $parents[$parentPath];
+                    if ($parent && $parent->getNumberOfChildren() > 0) {
+                        $parent->setValue($this->getNumChildrenFieldName(), $parent->getNumberOfChildren() - 1);
+                    }
+                }
+                if (!$node->isLeaf()) {
+                    $toRemove[] = $expr->like('e.' . $this->getPathFieldName(), $expr->literal($node->getPath() . '%'));
+                } else {
+                    $toRemove[] = $expr->eq('e.' . $this->getPathFieldName(), $expr->literal($node->getPath()));
+                }
+            }
+            if ($toRemove) {
+                $orX = $expr->orX();
+                $orX->addMultiple($toRemove);
+                $qb->delete($this->classMetadata->name, 'e')
+                    ->where($orX);
+                $this->getEntityManager()->flush();
+                $qb->getQuery()
+                    ->execute();
+            }
+            $this->em->getConnection()->commit();
+        } catch (\Exception $e) {
+            $this->em->getConnection()->rollback();
+            $this->em->close();
+            throw $e;
+        }
+    }
 
     /**
      * BEGIN MaterializedPathNodeInfo Implementation
