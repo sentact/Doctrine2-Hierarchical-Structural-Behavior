@@ -457,6 +457,9 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
      **/
     public function getAncestors()
     {
+        if ($this->getStepLength() == strlen($this->getPath())) {
+            return null;
+        }
         $paths = array();
         foreach (range(0, strlen($this->getPath()) - 1, $this->getStepLength()) as $pos) {
             if (0 == $pos) {
