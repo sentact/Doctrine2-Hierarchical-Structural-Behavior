@@ -313,9 +313,9 @@ class MaterializedPathManager extends AbstractManager implements MaterializedPat
      *
      * @return string
      */
-    public function getParentIdFieldName()
+    public function getParentFieldName()
     {
-        return $this->prototype->getParentIdFieldName();
+        return $this->prototype->getParentFieldName();
     }
 
     /**

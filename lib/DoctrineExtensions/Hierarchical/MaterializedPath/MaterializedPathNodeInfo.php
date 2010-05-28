@@ -19,12 +19,12 @@ interface MaterializedPathNodeInfo
     public function getPathFieldName();
 
     /**
-     * Retrieves the Entity parent_id field name
+     * Retrieves the Entity parent field name
      *
      * @return string
      */
-    public function getParentIdFieldName();
-    
+    public function getParentFieldName();
+
     /**
      * Retrieves the Entity depth field name
      *
@@ -41,7 +41,7 @@ interface MaterializedPathNodeInfo
 
     /**
      * Returns the Node level order by
-     * 
+     *
      * @return array Array of fieldNames, or empty array
      */
     public function getNodeOrderBy();
@@ -50,7 +50,7 @@ interface MaterializedPathNodeInfo
      * Returns the alphabet used for path generation
      *
      * Recommended Default: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-     * 
+     *
      * @return string
      */
     public function getAlphabet();
@@ -59,7 +59,7 @@ interface MaterializedPathNodeInfo
      * Returns the step length for path
      *
      * Recommended Default: 4
-     * 
+     *
      * @return integer
      */
     public function getStepLength();

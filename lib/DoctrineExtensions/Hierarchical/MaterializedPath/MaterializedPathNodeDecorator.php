@@ -39,9 +39,9 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
      *
      * @return string
      */
-    public function getParentIdFieldName()
+    public function getParentFieldName()
     {
-        return $this->entity->getParentIdFieldName();
+        return $this->entity->getParentFieldName();
     }
 
     /**
@@ -127,7 +127,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
     public function setParent($entity)
     {
         $this->parent = $this->_getNode($entity);
-        $this->setValue($this->getParentIdFieldName(), $entity->getId());
+        $this->setValue($this->getParentFieldName(), $entity->getId());
     }
 
 
@@ -442,7 +442,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
 
     public function hasParent()
     {
-        return !is_null($this->getValue($this->getParentIdFieldName()));
+        return !is_null($this->getValue($this->getParentFieldName()));
     }
 
     public function isLeaf()
