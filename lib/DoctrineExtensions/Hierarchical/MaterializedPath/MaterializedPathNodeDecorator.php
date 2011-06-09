@@ -677,7 +677,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
 
                     case 'right':
                         $gt = $expr->gt('e.' . $this->getPathFieldName(), $target->getPath());
-                        $siblings->andWhere($gte);
+                        $siblings->andWhere($gt);
                         $newPos = $baseNum + 1;
                         break;
 
