@@ -391,7 +391,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
         $this->classMetadata->reflFields[$this->getDepthFieldName()]->setValue($entity, $this->getDepth());
 
         if ($pos == 'sorted-sibling') {
-            $siblingQb = $this->hm->getQueryFactory()->getSortedPosQueryBuilder($this, $this->hm->getQueryFactory()->getSiblingQueryBuilder($this), $node);
+            $siblingQb = $this->hm->getQueryFactory()->getSortedPosQueryBuilder($this->hm->getQueryFactory()->getSiblingQueryBuilder($this), $node);
 
             try {
                 $q = $siblingQb->getQuery();
