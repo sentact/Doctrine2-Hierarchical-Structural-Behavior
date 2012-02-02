@@ -65,7 +65,6 @@ class MaterializedPathQueryFactory
 
         $qb = $siblingQueryBuilder;
         $expr = $qb->expr();
-        $orX = $qb->expr();
 
         $fields = $ands = array();
 
@@ -80,10 +79,13 @@ class MaterializedPathQueryFactory
             $ands[] = $andX;
             $fields[$field] = $value;
         }
-        foreach ($ands as $andX) {
-            $orX->add($andX);
+        if(!empty($ands)) {
+            $orX = $qb->expr();
+            foreach ($ands as $andX) {
+                $orX->add($andX);
+            }
+            $qb->andWhere($orX);
         }
-        $qb->andWhere($orX);
         return $qb;
     }
 
