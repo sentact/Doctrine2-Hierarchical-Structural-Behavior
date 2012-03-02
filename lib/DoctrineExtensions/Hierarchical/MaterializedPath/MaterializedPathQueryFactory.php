@@ -39,8 +39,7 @@ class MaterializedPathQueryFactory
     /**
      * Returns a basic QueryBuilder which will select the entire table ordered by path
      *
-     * @param  $node
-     * @return void
+     * @return \Doctrine\ORM\QueryBuilder
      */
     public function getBaseQueryBuilder()
     {
@@ -54,12 +53,11 @@ class MaterializedPathQueryFactory
     /**
      * Returns a QueryBuilder of nodes that must be moved to the right
      *
-     * @param string $siblingQueryBuilder
-     * @param string $node
-     * @return void
-     * @author David Abdemoulaie
+     * @param \Doctrine\ORM\QueryBuilder $siblingQueryBuilder
+     * @param \DoctrineExtensions\Hierarchical\MaterializedPath\MaterializedPathNodeInfo $node
+     * @return \Doctrine\ORM\QueryBuilder
      */
-    public function getSortedPosQueryBuilder($siblingQueryBuilder, $node)
+    public function getSortedPosQueryBuilder(\Doctrine\ORM\QueryBuilder $siblingQueryBuilder, MaterializedPathNodeInfo $node)
     {
         $entity = $node->unwrap();
 
@@ -92,11 +90,10 @@ class MaterializedPathQueryFactory
     /**
      * Returns a QueryBuilder to grab the siblings of the given node
      *
-     * @param string $node
-     * @return void
-     * @author David Abdemoulaie
+     * @param \DoctrineExtensions\Hierarchical\MaterializedPath\MaterializedPathNodeInfo $node
+     * @return \Doctrine\ORM\QueryBuilder
      */
-    public function getSiblingQueryBuilder($node)
+    public function getSiblingQueryBuilder(MaterializedPathNodeInfo $node)
     {
         $qb = $this->getBaseQueryBuilder();
         $expr = $qb->expr();
@@ -121,9 +118,10 @@ class MaterializedPathQueryFactory
     /**
      * Returns a QueryBuilder to grab the children of this node
      *
-     * @return void
-     **/
-    public function getChildrenQueryBuilder($node)
+     * @param \DoctrineExtensions\Hierarchical\MaterializedPath\MaterializedPathNodeDecorator $node
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function getChildrenQueryBuilder(MaterializedPathNodeDecorator $node)
     {
         $qb = $this->getBaseQueryBuilder();
         $expr = $qb->expr();

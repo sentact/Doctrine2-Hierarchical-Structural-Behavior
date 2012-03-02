@@ -159,7 +159,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
     /**
      * Returns all of the node's siblings, including the node itself
      *
-     * @return void
+     * @return array
      */
     public function getSiblings()
     {
