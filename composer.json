@@ -16,5 +16,10 @@
         "psr-0": {
             "DoctrineExtensions\\Hierarchical\\": "lib/"
         }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.x-dev"
+        }
     }
 }
