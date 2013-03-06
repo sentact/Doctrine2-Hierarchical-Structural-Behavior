@@ -1,0 +1,18 @@
+{
+    "name": "hobodave/doctrine-hierarchical",
+    "description": "Hierarchical Structural Behavior to support Tree structures inside Doctrine2",
+    "require": {
+        "doctrine/orm": "2.3.*"
+    },
+    "authors": [
+        {
+            "name": "David Abdemoulaie",
+            "email": "dave@hobodave.com"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "DoctrineExtensions": "lib/"
+        }
+    }
+}
