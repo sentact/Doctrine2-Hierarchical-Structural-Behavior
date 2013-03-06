@@ -1,6 +1,8 @@
 {
     "name": "hobodave/doctrine-hierarchical",
+    "type": "library",
     "description": "Hierarchical Structural Behavior to support Tree structures inside Doctrine2",
+    "keywords": ["orm", "doctrine", "tree", "materialized path"],
     "require": {
         "doctrine/orm": "2.3.*"
     },
@@ -12,7 +14,7 @@
     ],
     "autoload": {
         "psr-0": {
-            "DoctrineExtensions": "lib/"
+            "DoctrineExtensions\\Hierarchical\\": "lib/"
         }
     }
 }
