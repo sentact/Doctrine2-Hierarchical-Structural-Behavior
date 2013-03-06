@@ -3,6 +3,7 @@
     "type": "library",
     "description": "Hierarchical Structural Behavior to support Tree structures inside Doctrine2",
     "keywords": ["orm", "doctrine", "tree", "materialized path"],
+    "license": "MIT",
     "require": {
         "doctrine/orm": "2.3.*"
     },
