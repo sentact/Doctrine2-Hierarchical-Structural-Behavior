@@ -1,5 +1,5 @@
 {
-    "name": "hobodave/doctrine-hierarchical",
+    "name": "stevetauber/doctrine-hierarchical",
     "type": "library",
     "description": "Hierarchical Structural Behavior to support Tree structures inside Doctrine2",
     "keywords": ["orm", "doctrine", "tree", "materialized path"],
@@ -11,6 +11,10 @@
         {
             "name": "David Abdemoulaie",
             "email": "dave@hobodave.com"
+        },
+        {
+            "name": "Steve Tauber",
+            "email": "taubers+github@gmail.com"
         }
     ],
     "autoload": {
