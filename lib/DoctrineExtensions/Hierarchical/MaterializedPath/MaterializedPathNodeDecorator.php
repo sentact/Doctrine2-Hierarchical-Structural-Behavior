@@ -689,27 +689,29 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
 
             $newPath = $this->_getPath($target->getPath(), $newDepth, $newPos);
 
-            $siblings->orderBy('e.' . $this->getPathFieldName(), 'DESC');
-            $q = $siblings->getQuery();
+            if(!empty($siblings)) {
+                $siblings->orderBy('e.' . $this->getPathFieldName(), 'DESC');
+                $q = $siblings->getQuery();
 
-            $nodes = $q->getResult();
-            foreach ($nodes as $node) {
-                // Move the right siblings and their branches one step to the right
-                $node = $this->_getNode($node);
-                $nextPath = $this->_incPath($node->getPath());
-                $queries[] = $this->hm->getQueryFactory()->getNewPathInBranchesQueryBuilder($this, $node->getPath(), $nextPath);
+                $nodes = $q->getResult();
+                foreach ($nodes as $node) {
+                    // Move the right siblings and their branches one step to the right
+                    $node = $this->_getNode($node);
+                    $nextPath = $this->_incPath($node->getPath());
+                    $queries[] = $this->hm->getQueryFactory()->getNewPathInBranchesQueryBuilder($this, $node->getPath(), $nextPath);
 
-                if ($moveBranch) {
-                    if (0 === strpos($oldPath, $node->getPath())) {
-                        // If moving to a parent, update oldpath since we just
-                        // increased the path of the entire branch
-                        $oldPath = $nextPath . substr($oldPath, strlen($nextPath));
-                    }
-                    if (0 === strpos($target->getPath(), $node->getPath())) {
-                        // If target moved, update the target entity
-                        $this->classMetadata->reflFields[$this->getPathFieldName()]->setValue(
-                            $target, $nextPath . substr($target->getPath(), strlen($nextPath))
-                        );
+                    if ($moveBranch) {
+                        if (0 === strpos($oldPath, $node->getPath())) {
+                            // If moving to a parent, update oldpath since we just
+                            // increased the path of the entire branch
+                            $oldPath = $nextPath . substr($oldPath, strlen($nextPath));
+                        }
+                        if (0 === strpos($target->getPath(), $node->getPath())) {
+                            // If target moved, update the target entity
+                            $this->classMetadata->reflFields[$this->getPathFieldName()]->setValue(
+                                $target, $nextPath . substr($target->getPath(), strlen($nextPath))
+                            );
+                        }
                     }
                 }
             }
@@ -733,6 +735,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
     {
         $newDepth = $target->getDepth();
         $siblings = array();
+        $newPos = null;
 
         if (in_array($pos, array('first-child', 'last-child', 'sorted-child'))) {
             $parent = $target;
@@ -740,9 +743,9 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
             if ($target->isLeaf()) {
                 $newPos = 1;
                 $pos = 'first-sibling';
-                $siblings = array(); // TODO - hmm
             } else {
                 $target = $target->getLastChild();
+                $siblings = $target->getSiblings();
                 $pos = str_replace('child', 'sibling', $pos);
             }
             $this->classMetadata->reflFields[$this->getNumChildrenFieldName()]->setValue($parent, $parent->getNumberOfChildren() + 1);
@@ -767,7 +770,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
             || $oldParentPath && !$newParentPath
             || ($oldParentPath != $newParentPath)
         ) {
-            // Node canged parent, update count
+            // Node changed parent, update count
             if ($oldParentPath) {
                 $queries[] = $this->hm->getQueryFactory()->getUpdateNumChildrenQueryBuilder($this, $oldParentPath, 'dec');
             }

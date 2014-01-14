@@ -217,15 +217,13 @@ class MaterializedPathQueryFactory
 
         $expr = $qb->expr();
 
-        $sets = array();
-
         $substr = $expr->substring('e.' . $node->getPathFieldName(), strlen($oldPath)+1);
         $concat = $expr->concat($expr->literal($newPath), $substr);
         $qb->set('e.' . $node->getPathFieldName(), $concat);
 
         if (strlen($oldPath) != strlen($newPath)) {
-            // Depth change required
-            $newLength = $expr->length($concat);
+            // Depth change required; since the path update occurs first, we can just use that to determine length
+            $newLength = $expr->length('e.' . $node->getPathFieldName());
             $quot = $expr->quot($newLength, $node->getStepLength());
             $qb->set('e.' . $node->getDepthFieldName(), $quot);
         }
