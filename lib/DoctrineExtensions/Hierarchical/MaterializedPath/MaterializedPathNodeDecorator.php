@@ -745,7 +745,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
                 $target = $target->getLastChild();
                 $pos = str_replace('child', 'sibling', $pos);
             }
-            $this->classMetadata->reflValues[$this->getNumChildrenFieldName()]->setValue($parent, $parent->getNumberOfChildren() + 1);
+            $this->classMetadata->reflFields[$this->getNumChildrenFieldName()]->setValue($parent, $parent->getNumberOfChildren() + 1);
         }
         return array($pos, $target, $newDepth, $siblings, $newPos);
     }
@@ -811,7 +811,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
             }
         }
         $valid = array('first-sibling', 'left', 'right', 'last-sibling', 'sorted-sibling', 'first-child', 'last-child', 'sorted-child');
-        if (!in_array($pos, array('first-sibling'))) {
+        if (!in_array($pos, $valid)) {
             throw new \InvalidArgumentException("Invalid relative position: {$pos}");
         }
         if ($this->getNodeOrderBy()
