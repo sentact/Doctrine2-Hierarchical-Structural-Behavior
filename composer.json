@@ -1,5 +1,5 @@
 {
-    "name": "stevetauber/doctrine-hierarchical",
+    "name": "sentact/doctrine-hierarchical",
     "type": "library",
     "description": "Hierarchical Structural Behavior to support Tree structures inside Doctrine2",
     "keywords": ["orm", "doctrine", "tree", "materialized path"],
