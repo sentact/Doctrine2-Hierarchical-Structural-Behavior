@@ -367,7 +367,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
 
             $node->setParent($this);
             $this->setValue($this->getNumChildrenFieldName(), $this->getNumberOfChildren() + 1);
-            $em->flush();
+            $em->flush($entity);
             $em->getConnection()->commit();
         } catch (\Exception $e) {
             $em->getConnection()->rollback();
@@ -426,7 +426,7 @@ class MaterializedPathNodeDecorator extends AbstractDecorator implements Node, M
             }
             $this->classMetadata->reflFields[$this->getPathFieldName()]->setValue($entity, $newPath);
             $em->persist($entity);
-            $em->flush();
+            $em->flush($entity);
             $em->getConnection()->commit();
         } catch (\Exception $e) {
             $em->getConnection()->rollback();

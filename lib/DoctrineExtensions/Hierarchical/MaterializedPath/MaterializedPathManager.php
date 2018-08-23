@@ -91,7 +91,7 @@ class MaterializedPathManager extends AbstractManager implements MaterializedPat
             $node->setValue($this->getDepthFieldName(), 1);
             $node->setValue($this->getPathFieldName(), $newPath);
             $this->em->persist($entity);
-            $this->em->flush();
+            $this->em->flush($entity);
             $this->em->getConnection()->commit();
         } catch (\Exception $e) {
             $this->em->getConnection()->rollback();
